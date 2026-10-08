@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Việt phục Remix</title>
+    <style>
+        /* CSS Variables cho Light/Dark Mode */
+        :root {
+            --bg-color: #faf5ea;
+            --text-color: #333333;
+            --card-bg: #ffffff;
+            --border-color: #eaddc7;
+            --accent-color: #b3261e;
+            --accent-light: #fceceb;
+            --muted-text: #666666;
+            --warning-bg: #fff9c4;
+            --warning-text: #856404;
+            --success-text: #155724;
+            --svg-bg: linear-gradient(135deg, #fdfbf7 0%, #f0e6d2 100%);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #121212;
+                --text-color: #e0e0e0;
+                --card-bg: #1e1e1e;
+                --border-color: #333333;
+                --accent-color: #e57373;
+                --accent-light: #4a1917;
+                --muted-text: #aaaaaa;
+                --warning-bg: #4d4400;
+                --warning-text: #ffd54f;
+                --success-text: #81c784;
+                --svg-bg: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+            }
+        }
+
+        /* Reset & Typography */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            padding: 20px;
+        }
+        h1, h2, h3, h4 { font-family: Georgia, serif; font-weight: normal; }
+        
+        /* Layout */
+        header { text-align: center; margin-bottom: 30px; }
+        header h1 { font-size: 2.2rem; color: var(--accent-color); margin-bottom: 5px; font-weight: bold; }
+        header p { color: var(--muted-text); }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        
+        @media (min-width: 760px) {
+            .container { flex-direction: row; }
+            .col-left { flex: 1.2; }
+            .col-right { flex: 1; }
+        }
+
+        /* Cards */
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+
+        /* Controls (Left Column) */
+        .control-group { margin-bottom: 24px; }
+        .control-group:last-child { margin-bottom: 0; }
+        .control-group h3 { margin-bottom: 12px; font-size: 1.1rem; }
+        
+        .chip-container { display: flex; flex-wrap: wrap; gap: 10px; }
+        .chip {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        .chip:hover { border-color: var(--accent-color); }
+        .chip.active {
+            background-color: var(--accent-light);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+
+        .color-container { display: flex; flex-wrap: wrap; gap: 12px; }
+        .color-circle {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .color-circle.active {
+            transform: scale(1.15);
+            border-color: var(--text-color);
+            box-shadow: 0 0 0 2px var(--card-bg), 0 0 0 4px var(--text-color);
+        }
+
+        /* Result (Right Column) */
+        .mockup-container {
+            background: var(--svg-bg);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 330px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        .mockup-container svg { height: 100%; max-width: 100%; }
+
+        .result-info { font-size: 0.95rem; }
+        .result-title { font-size: 1.4rem; margin-bottom: 8px; font-weight: bold; color: var(--accent-color); }
+        .tags { margin-bottom: 16px; color: var(--muted-text); font-size: 0.85rem; }
+        
+        .section { margin-bottom: 16px; }
+        .section h4 { font-family: system-ui, sans-serif; font-size: 1rem; margin-bottom: 6px; font-weight: 600; }
+        .section p, .section ul { margin-left: 0; color: var(--text-color); }
+        .section ul { padding-left: 20px; }
+
+        .harmony-high { color: var(--success-text); font-weight: 500; }
+        .harmony-low { color: var(--warning-text); font-weight: 500; }
+
+        .warning-box {
+            background-color: var(--warning-bg);
+            color: var(--warning-text);
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        .success-box {
+            color: var(--success-text);
+            font-size: 0.9rem;
+            margin-top: 8px;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            color: var(--muted-text);
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Việt phục Remix</h1>
+        <p>Khám phá và phối trang phục truyền thống Việt Nam theo phong cách Gen Z</p>
+    </header>
+
+    <div class="container">
+        <!-- Cột điều khiển -->
+        <div class="col-left card" id="controls">
+            <!-- Render by JS -->
+        </div>
+
+        <!-- Cột kết quả -->
+        <div class="col-right card">
+            <div class="mockup-container" id="mockup">
+                <!-- SVG Render by JS -->
+            </div>
+            <div class="result-info" id="result-info">
+                <!-- Info Render by JS -->
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Lưu ý: Các gợi ý mang tính tham khảo, hãy đối chiếu thêm nguồn tài liệu văn hóa chính thống.
+    </footer>
+
+    <script>
+        // --- 1. DỮ LIỆU ---
+        const DBOutfits = {
+            "Áo dài": {
+                origin: "Nguồn gốc từ áo ngũ thân thời chúa Nguyễn (thế kỷ 18), được cách tân thập niên 1930 với dáng ôm, tà dài tới gót; nay được xem là quốc phục.",
+                bottom: "Quần lụa rộng cùng tông hoặc màu trắng."
+            },
+            "Áo tứ thân": {
+                origin: "Trang phục phụ nữ Bắc Bộ, hai tà trước buộc lại, đi cùng yếm, váy, thắt lưng; gắn với hội làng, quan họ.",
+                bottom: "Váy đụp đen/nâu + yếm bên trong."
+            },
+            "Áo ngũ thân": {
+                origin: "Áo cổ đứng, tà phải có thêm vạt con ẩn bên trong, phổ biến thời Nguyễn, là tiền thân của áo dài.",
+                bottom: "Quần ống rộng màu trơn."
+            },
+            "Áo bà ba": {
+                origin: "Trang phục Nam Bộ, cổ tròn hoặc cổ tim, vạt ngắn tới hông, hợp khí hậu nóng ẩm, thường đi với khăn rằn.",
+                bottom: "Quần lĩnh hoặc quần đũi ống suông."
+            }
+        };
+
+        const DBEvents = ["Tết", "Lễ tốt nghiệp", "Dạo phố - cà phê", "Lễ hội - kỷ yếu"];
+
+        const DBColors = [
+            { name: "Đỏ son", hex: "#c0392b" },
+            { name: "Vàng nghệ", hex: "#e0a800" },
+            { name: "Xanh ngọc", hex: "#1f8a7a" },
+            { name: "Chàm", hex: "#26406b" },
+            { name: "Trắng ngà", hex: "#f3ede0" },
+            { name: "Hồng sen", hex: "#e58aa0" }
+        ];
+
+        const DBAccessories = ["Nón lá", "Nón quai thao", "Khăn rằn", "Khăn vấn", "Trâm cài", "Không"];
+
+        const DBStyles = {
+            "Truyền thống": "Giữ nguyên chất liệu và dáng gốc, ưu tiên phụ kiện cổ điển.",
+            "Thanh lịch": "Màu sắc tiết chế, chất liệu lụa/đũi, trang sức tối giản.",
+            "Gen Z remix": "Thêm sneaker trắng, áo khoác denim hoặc túi đeo chéo, nhưng giữ nguyên phần áo chính."
+        };
+
+        // --- 2. TRẠNG THÁI HIỆN TẠI ---
+        const state = {
+            outfit: "Áo dài",
+            event: "Tết",
+            colorName: "Đỏ son",
+            colorHex: "#c0392b",
+            accessory: "Trâm cài",
+            style: "Gen Z remix"
+        };
+
+        // --- 3. LOGIC XỬ LÝ VÀ CẢNH BÁO ---
+        function checkHarmony() {
+            const rules = {
+                'Tết': ['Đỏ son', 'Vàng nghệ', 'Hồng sen'],
+                'Lễ tốt nghiệp': ['Trắng ngà', 'Chàm', 'Xanh ngọc'],
+                'Dạo phố - cà phê': ['Xanh ngọc', 'Chàm', 'Hồng sen', 'Trắng ngà'],
+                'Lễ hội - kỷ yếu': ['Đỏ son', 'Vàng nghệ', 'Xanh ngọc', 'Hồng sen']
+            };
+            if (rules[state.event].includes(state.colorName)) {
+                return { status: 'Hài hòa cao', text: 'Màu sắc rất phù hợp với bối cảnh sự kiện.', cls: 'harmony-high' };
+            }
+            return { status: 'Cần cân nhắc', text: 'Màu này có thể chưa tối ưu nhất cho sự kiện, nhưng vẫn có thể phá cách nếu khéo léo.', cls: 'harmony-low' };
+        }
+
+        function checkCulturalWarnings() {
+            let warnings = [];
+            if (state.accessory === 'Nón quai thao' && state.outfit !== 'Áo tứ thân') {
+                warnings.push("Nón quai thao là đặc trưng Bắc Bộ, thường đi kèm áo tứ thân. Cần cẩn trọng khi ghép sai bối cảnh.");
+            }
+            if (state.accessory === 'Khăn rằn' && state.outfit !== 'Áo bà ba') {
+                warnings.push("Khăn rằn gắn liền với Nam Bộ. Phối với trang phục khác có thể làm sai lệch đặc trưng văn hóa.");
+            }
+            if (state.outfit === 'Áo bà ba' && state.event === 'Lễ tốt nghiệp') {
+                warnings.push("Áo bà ba mang tính thường nhật, có thể chưa đủ trang trọng cho lễ tốt nghiệp. Gợi ý: Áo dài hoặc Áo ngũ thân.");
+            }
+            if (state.colorName === 'Vàng nghệ' && state.event === 'Lễ tốt nghiệp') {
+                warnings.push("Màu vàng nghệ khá nổi bật, có thể lấn át áo cử nhân.");
+            }
+            if ((state.colorName === 'Đỏ son' || state.colorName === 'Hồng sen') && state.event === 'Lễ tốt nghiệp') {
+                warnings.push("Lễ tốt nghiệp thường phù hợp hơn với các tông màu thanh lịch (trắng ngà, xanh ngọc, chàm).");
+            }
+            if (state.style === 'Gen Z remix' && state.outfit === 'Áo ngũ thân' && state.event === 'Tết') {
+                warnings.push("Với Áo ngũ thân dịp Tết: Chỉ nên remix ở phụ kiện, tránh cắt xẻ làm mất đặc trưng cổ đứng và vạt con.");
+            }
+            return warnings;
+        }
+
+        // --- 4. RENDER UI ---
+        function renderControls() {
+            const controlsDiv = document.getElementById('controls');
+            let html = '';
+
+            // Group 1: Outfit
+            html += `<div class="control-group"><h3>Trang phục</h3><div class="chip-container">`;
+            Object.keys(DBOutfits).forEach(item => {
+                html += `<button class="chip ${state.outfit === item ? 'active' : ''}" onclick="updateState('outfit', '${item}')">${item}</button>`;
+            });
+            html += `</div></div>`;
+
+            // Group 2: Event
+            html += `<div class="control-group"><h3>Sự kiện</h3><div class="chip-container">`;
+            DBEvents.forEach(item => {
+                html += `<button class="chip ${state.event === item ? 'active' : ''}" onclick="updateState('event', '${item}')">${item}</button>`;
+            });
+            html += `</div></div>`;
+
+            // Group 3: Color
+            html += `<div class="control-group"><h3>Màu chủ đạo</h3><div class="color-container">`;
+            DBColors.forEach(item => {
+                html += `<div class="color-circle ${state.colorName === item.name ? 'active' : ''}" 
+                              style="background-color: ${item.hex}" 
+                              aria-label="${item.name}" title="${item.name}" 
+                              onclick="updateState('color', '${item.name}', '${item.hex}')"></div>`;
+            });
+            html += `</div></div>`;
+
+            // Group 4: Accessory
+            html += `<div class="control-group"><h3>Phụ kiện</h3><div class="chip-container">`;
+            DBAccessories.forEach(item => {
+                html += `<button class="chip ${state.accessory === item ? 'active' : ''}" onclick="updateState('accessory', '${item}')">${item}</button>`;
+            });
+            html += `</div></div>`;
+
+            // Group 5: Style
+            html += `<div class="control-group"><h3>Phong cách</h3><div class="chip-container">`;
+            Object.keys(DBStyles).forEach(item => {
+                html += `<button class="chip ${state.style === item ? 'active' : ''}" onclick="updateState('style', '${item}')">${item}</button>`;
+            });
+            html += `</div></div>`;
+
+            controlsDiv.innerHTML = html;
+        }
+
+        function renderMockup() {
+            const svgDiv = document.getElementById('mockup');
+            const c = state.colorHex;
+            
+            // Khởi tạo SVG
+            let svg = `<svg viewBox="0 0 200 330" xmlns="http://www.w3.org/2000/svg">`;
+            
+            // Vẽ người cơ bản
+            // Tóc sau/búi tóc
+            if (state.accessory === 'Trâm cài') {
+                svg += `<circle cx="120" cy="40" r="15" fill="#111" />`;
+                svg += `<line x1="110" y1="35" x2="140" y2="25" stroke="#f1c40f" stroke-width="3" />`;
+            }
+            if (state.accessory === 'Khăn vấn') {
+                svg += `<path d="M 75 30 Q 100 15 125 30 L 125 45 Q 100 35 75 45 Z" fill="#26406b" />`;
+            }
+
+            // Chân & Giày
+            svg += `<rect x="85" y="250" width="10" height="50" fill="#f0c9a4" />`;
+            svg += `<rect x="105" y="250" width="10" height="50" fill="#f0c9a4" />`;
+            if (state.style === 'Gen Z remix') {
+                // Sneaker trắng
+                svg += `<path d="M 75 300 L 95 300 L 95 285 Q 75 285 75 300" fill="#fff" stroke="#ccc" stroke-width="1"/>`;
+                svg += `<path d="M 105 300 L 125 300 L 125 285 Q 105 285 105 300" fill="#fff" stroke="#ccc" stroke-width="1"/>`;
+            } else {
+                // Giày cổ điển nâu
+                svg += `<ellipse cx="85" cy="295" rx="12" ry="6" fill="#5c4033" />`;
+                svg += `<ellipse cx="115" cy="295" rx="12" ry="6" fill="#5c4033" />`;
+            }
+
+            // Cổ & Đầu & Tóc trước
+            svg += `<rect x="90" y="65" width="20" height="15" fill="#f0c9a4" />`;
+            svg += `<circle cx="100" cy="50" r="22" fill="#f0c9a4" />`;
+            svg += `<path d="M 78 50 Q 100 20 122 50 Q 125 30 100 25 Q 75 30 78 50" fill="#111" />`; // Tóc mái
+
+            // Vẽ Trang phục
+            if (state.outfit === 'Áo dài') {
+                svg += `<path d="M 80 250 L 70 80 Q 100 75 130 80 L 120 250 Z" fill="#fff" />`; // Quần lụa trắng
+                svg += `<path d="M 70 230 L 75 80 L 125 80 L 130 230 Z" fill="${c}" />`; // Tà áo dài
+                svg += `<rect x="92" y="75" width="16" height="8" fill="${c}" />`; // Cổ áo
+            } 
+            else if (state.outfit === 'Áo tứ thân') {
+                svg += `<path d="M 70 250 L 75 140 L 125 140 L 130 250 Z" fill="#222" />`; // Váy đen
+                svg += `<path d="M 75 80 L 85 150 L 115 150 L 125 80 Z" fill="${c}" />`; // Áo ngoài
+                svg += `<polygon points="90,80 110,80 100,110" fill="#e58aa0" />`; // Yếm hồng
+                svg += `<rect x="75" y="145" width="50" height="8" fill="#f1c40f" />`; // Thắt lưng vàng
+            }
+            else if (state.outfit === 'Áo ngũ thân') {
+                svg += `<path d="M 80 250 L 75 150 L 125 150 L 120 250 Z" fill="#222" />`; // Quần ống rộng đen
+                svg += `<path d="M 75 180 L 75 80 L 125 80 L 125 180 Z" fill="${c}" />`; // Thân áo
+                svg += `<rect x="92" y="73" width="16" height="10" fill="${c}" stroke="#f1c40f" stroke-width="1.5" />`; // Cổ áo viền vàng
+                svg += `<line x1="100" y1="83" x2="125" y2="120" stroke="#f1c40f" stroke-width="1.5" />`; // Tà chéo vạt con
+            }
+            else if (state.outfit === 'Áo bà ba') {
+                svg += `<path d="M 80 250 L 75 150 L 125 150 L 120 250 Z" fill="#222" />`; // Quần suông đen
+                svg += `<path d="M 75 150 L 75 80 L 125 80 L 125 150 Z" fill="${c}" />`; // Áo vạt ngắn
+                svg += `<path d="M 90 80 Q 100 95 110 80 Z" fill="#f0c9a4" />`; // Cổ tròn khoét
+            }
+
+            // Tay & Áo khoác (Gen Z)
+            if (state.style === 'Gen Z remix') {
+                // Áo khoác denim (xanh trong suốt)
+                svg += `<path d="M 65 160 L 75 80 Q 100 70 125 80 L 135 160 L 120 160 L 115 90 L 85 90 L 80 160 Z" fill="rgba(60, 100, 180, 0.55)" />`;
+            } else {
+                // Tay áo bình thường
+                svg += `<path d="M 75 80 L 60 140 L 70 145 L 80 90 Z" fill="${c}" />`;
+                svg += `<path d="M 125 80 L 140 140 L 130 145 L 120 90 Z" fill="${c}" />`;
+            }
+
+            // Bàn tay
+            svg += `<circle cx="65" cy="142" r="5" fill="#f0c9a4" />`;
+            svg += `<circle cx="135" cy="142" r="5" fill="#f0c9a4" />`;
+
+            // Phụ kiện khác (Nón)
+            if (state.accessory === 'Nón lá') {
+                svg += `<polygon points="50,40 150,40 100,10" fill="#f4d03f" stroke="#d4ac0d" stroke-width="1" />`;
+            }
+            if (state.accessory === 'Nón quai thao') {
+                svg += `<ellipse cx="100" cy="30" rx="60" ry="12" fill="#222" />`;
+                svg += `<path d="M 50 35 Q 100 80 150 35" fill="none" stroke="#f1c40f" stroke-width="2" />`; // Quai
+            }
+            if (state.accessory === 'Khăn rằn') {
+                // Mô phỏng họa tiết caro
+                svg += `<polygon points="90,80 110,80 100,110" fill="#fff" />`;
+                svg += `<line x1="95" y1="90" x2="105" y2="90" stroke="#333" stroke-width="1" />`;
+                svg += `<line x1="97" y1="100" x2="103" y2="100" stroke="#333" stroke-width="1" />`;
+                svg += `<line x1="100" y1="80" x2="100" y2="110" stroke="#333" stroke-width="1" />`;
+            }
+
+            svg += `</svg>`;
+            svgDiv.innerHTML = svg;
+        }
+
+        function renderInfo() {
+            const infoDiv = document.getElementById('result-info');
+            const harmony = checkHarmony();
+            const warnings = checkCulturalWarnings();
+            
+            let html = `
+                <div class="result-title">${state.outfit} · ${state.event}</div>
+                <div class="tags">${state.style} · Màu ${state.colorName} · Phụ kiện: ${state.accessory}</div>
+                
+                <div class="section">
+                    <h4>Độ hài hòa màu sắc: <span class="${harmony.cls}">${harmony.status}</span></h4>
+                    <p>${harmony.text}</p>
+                </div>
+
+                <div class="section">
+                    <h4>Gợi ý phối đồ</h4>
+                    <ul>
+                        <li><b>Phong cách:</b> ${DBStyles[state.style]}</li>
+                        <li><b>Phần dưới:</b> ${DBOutfits[state.outfit].bottom}</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h4>Nguồn gốc & Ý nghĩa</h4>
+                    <p>${DBOutfits[state.outfit].origin}</p>
+                </div>
+                
+                <div class="section">
+                    <h4>Cảnh báo văn hóa</h4>
+            `;
+
+            if (warnings.length > 0) {
+                warnings.forEach(w => {
+                    html += `<div class="warning-box"><span>⚠️</span> <span>${w}</span></div>`;
+                });
+            } else {
+                html += `<div class="success-box"><span>✓</span> Không phát hiện kết hợp gây sai lệch đặc trưng.</div>`;
+            }
+
+            html += `</div>`;
+            infoDiv.innerHTML = html;
+        }
+
+        // --- 5. ĐIỀU KHIỂN & CẬP NHẬT ---
+        function updateState(key, value, hex = null) {
+            if (key === 'color') {
+                state.colorName = value;
+                state.colorHex = hex;
+            } else {
+                state[key] = value;
+            }
+            
+            // Cập nhật lại UI không cần reload
+            renderControls();
+            renderMockup();
+            renderInfo();
+        }
+
+        // --- 6. KHỞI TẠO LẦN ĐẦU ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderControls();
+            renderMockup();
+            renderInfo();
+        });
+
+    </script>
+</body>
+</html>
